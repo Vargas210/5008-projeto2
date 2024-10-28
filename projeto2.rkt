@@ -59,15 +59,7 @@
 ;; obrigatoriamente avaliado usando WeScheme (https://www.wescheme.org), então 
 ;; garanta que ele funciona corretamente neste ambiente.
 ;;
-;;##########################################################################
-;;### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1    #####
-;;##########################################################################
-;;==========================================================================
-;; Defina um tipo de dados chamado Pokemon, que deve registrar o nome de uma 
-;; espécie de Pokémon ("Bulbasaur", "Charmander", "Squirtle", etc.), o seu tipo
-;; 1 ("Grass", "Fire", etc.), tipo 2. Se o Pokemon só tem um tipo, tipo 2 deve 
-;; ter o Symbol 'vazio.
-;;
+
 (define-struct pokemon (especie tipo1 tipo2))
 ;; Um elemento to conjunto Pokemon tem o formato (make-pokemon especie tipo1 tipo2)
 ;; onde:
@@ -76,55 +68,39 @@
 ;; tipo2: String ou Symbol, representa o segundo tipo do Pokemon ou 'vazio, caso
 ;;        ele não o tenha.
 
-;; TODO: Defina 4 constantes cujos valores sejam do tipo Pokemon.   
 (define POKEMON1 (make-pokemon "Bulbasaur" "Grass" "Poison"))
 (define POKEMON2 (make-pokemon "Charmander" "Fire" 'vazio))
 (define POKEMON3 (make-pokemon "Squirtle" "Water" 'vazio))
 (define POKEMON4 (make-pokemon "Machop" "Fighting" 'vazio))
 
+(define-struct pokemoncapturado (pokemon nome nivel hpmaximo hpatual))
+;; Um elemento to conjunto PokemonCapturado tem o formato (make-pokemoncapturado 
+;; pokemon nome nivel hpmaximo hpatual) onde:
+;;  pokemon: Pokemon, representa o Pokemon capturado
+;;  nome: String, representa o nome do Pokemon
+;;  nivel: Numero, representa o nível do Pokemon  
+;;  hpmaximo: Numero, representa a quantia de vida maxima do Pokemon  
+;;  hpatual: Numero, representa a quantia de vida atual do Pokemon  
 
-;; Defina um tipo de dados chamado PokemonCapturado que deve registrar o Pokémon 
-;; que foi capturado (estrutura Pokemon), o nome de um Pokémon capturado (uma 
-;; string), o nível do Pokémon (um inteiro positivo), o HP máximo do Pokémon (um 
-;; inteiro positivo), o HP atual do Pokémon (um inteiro positivo).
-;; 
-;; Defina 4 constantes cujos valores sejam do tipo PokemonCapturado.   
-;; 
-;; Defina também um tipo de dados chamado Treinador, que deve registrar o nome de 
-;; um treinador (uma string), sua idade (um número) e seis vagas do time deste 
-;; Treinador. Cada vaga de time pode ser um Pokémon capturado (tipo 
-;; PokemonCapturado) ou pode estar livre (neste caso, deve ser utilizada o 
-;; Symbol 'vazio). 
-;; 
-;; Defina 4 constantes cujos valores sejam do tipo Treinador.    
-;; 
-;; Escreva a documentação completa de cada estrutura como visto em aula.
-;;==========================================================================
-  
-;;(define-struct pokemon (...))
-;;...
-;; Obs.: Use os seguintes nomes de atributos para esta estrutura: especie 
-;; (String), tipo1 (String), tipo2 (StringOuSymbol)
-   
-;; (define-struct pokemoncapturado (...))
-;; ...
-;; Obs.: Use os seguintes nomes de atributos para esta estrutura: pokemon 
-;; (Pokemon), nome (String), nivel (Número), hpmaximo (Número), hpatual (Número)
-  
-;;--------------------------------
-;; TIPO PokemonCapturadoOuSymbol:
-;;--------------------------------
-  
-;; (define-struct treinador (...))
-;; ...
-;; Obs.: Use os seguintes nomes de atributos para esta estrutura: nome (String), 
-;; idade (Número), vaga1 (PokemonCapturadoOuSymbol), vaga1 (PokemonCapturadoOuSymbol),
-;; vaga2 (PokemonCapturadoOuSymbol), vaga3 (PokemonCapturadoOuSymbol), vaga4 
-;; (PokemonCapturadoOuSymbol), vaga5 (PokemonCapturadoOuSymbol), vaga6 (PokemonCapturadoOuSymbol)
-   
-;; Defina as constantes abaixo:
-;; ...
-  
+(define capturado1 (make-pokemoncapturado POKEMON1 "Pokemon 1" 1 100 90))
+(define capturado2 (make-pokemoncapturado POKEMON2 "Pokemon 2" 2 100 90))
+(define capturado3 (make-pokemoncapturado POKEMON3 "Pokemon 3" 3 100 90))
+(define capturado4 (make-pokemoncapturado POKEMON4 "Pokemon 4" 4 100 90))
+
+(define-struct treinador (nome idade vaga1 vaga2 vaga3 vaga4 vaga5 vaga6))
+;; Um elemento do conjunto Treinador tem o formato (make-treinador nome idade 
+;; vaga1 vaga2 vaga3 vaga4 vaga5 vaga6), onde:
+;;   nome: String, representa o nome do treinador
+;;   idade: Numero, representa a idade do treinador
+;;   vaga1-6: PokemonCapturado ou Symbol, representa o PokemonCapturado que o 
+;;            treinador possui, ou contem o Symbol 'vazio caso o treinador não 
+;;            tenha um pokemon naquela vaga.
+
+(define treinador1 (make-treinador "Treinador 1" 18 POKEMON1 POKEMON2 'vazio 'vazio POKEMON4 'vazio))
+(define treinador2 (make-treinador "Treinador 2" 19 'vazio POKEMON2 'vazio 'vazio POKEMON4 'vazio))
+(define treinador3 (make-treinador "Treinador 3" 20 'vazio 'vazio 'vazio POKEMON3 POKEMON4 'vazio))
+(define treinador4 (make-treinador "Treinador 4" 21 'vazio 'vazio 'vazio 'vazio POKEMON4 'vazio))
+
 ;;##########################################################################
 ;;### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2    #####
 ;;##########################################################################
