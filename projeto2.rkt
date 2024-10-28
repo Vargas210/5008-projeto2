@@ -64,8 +64,8 @@
 ;; Um elemento to conjunto Pokemon tem o formato (make-pokemon especie tipo1 tipo2)
 ;; onde:
 ;; especie: String, representa a especie do Pokemon
-;; tipo1: String, representa o primeiro tipo do Pokemon
-;; tipo2: String ou Symbol, representa o segundo tipo do Pokemon ou 'vazio, caso
+;;   tipo1: String, representa o primeiro tipo do Pokemon
+;;   tipo2: String ou Symbol, representa o segundo tipo do Pokemon ou 'vazio, caso
 ;;        ele não o tenha.
 
 (define POKEMON1 (make-pokemon "Bulbasaur" "Grass" "Poison"))
