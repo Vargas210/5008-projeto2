@@ -69,7 +69,7 @@
 ;; ter o Symbol 'vazio.
 ;;
 (define-struct pokemon (especie tipo1 tipo2))
-;; Um elemnto to conjunto Pokemon tem o formato (make-pokemon especie tipo1 tipo2)
+;; Um elemento to conjunto Pokemon tem o formato (make-pokemon especie tipo1 tipo2)
 ;; onde:
 ;; especie: String, representa a especie do Pokemon
 ;; tipo1: String, representa o primeiro tipo do Pokemon
