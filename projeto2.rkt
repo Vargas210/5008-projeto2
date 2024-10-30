@@ -2,14 +2,14 @@
 
 (define VAZIO 'vazio)
 
-(define-struct pokemon (especie tipo1 tipo2))
+(define-struct pokemon [especie tipo1 tipo2])
 
 (define POKEMON1 (make-pokemon "Bulbasaur" "Grass" "Poison"))
 (define POKEMON2 (make-pokemon "Charmander" "Fire" VAZIO))
 (define POKEMON3 (make-pokemon "Squirtle" "Water" VAZIO))
 (define POKEMON4 (make-pokemon "Machop" "Fighting" VAZIO))
 
-(define-struct pokemoncapturado (pokemon nome nivel hpmaximo hpatual))
+(define-struct pokemoncapturado [pokemon nome nivel hpmaximo hpatual])
 
 (define CAPTURADO1 (make-pokemoncapturado POKEMON1 "Pokemon 1" 1 100 90))
 (define CAPTURADO2 (make-pokemoncapturado POKEMON2 "Pokemon 2" 2 100 90))
@@ -34,10 +34,10 @@
   (conta-capturado (treinador-pokebag treinador)))
 
 (define (tem-vaga treinador)
-        (< (tamanho-time treinador) 6))
+  (< (tamanho-time treinador) 6))
 
 (define (recebe-pokemon treinador pokemon)
- (cond
+  (cond
     [(> (tamanho-time treinador) 0) treinador]
     [else (make-treinador 
             (treinador-nome treinador) 
@@ -63,5 +63,38 @@
        (adiciona-pokemon (treinador-pokebag treinador) pokemon))]
     [else treinador]))
 
-(displayln (treinador-pokebag TREINADOR4)
-(displayln (treinador-pokebag (captura-pokemon TREINADOR4 POKEMON1)))
+(define (acha-e-deleta pokebag nome)
+  (cond
+    [(empty? pokebag) '()]
+    [(or
+       (eq? 
+         VAZIO 
+         (first pokebag))
+       (not 
+         (eq? 
+           nome 
+           (pokemoncapturado-nome (first pokebag))))) 
+     (append (list (first pokebag)) (acha-e-deleta (rest pokebag) nome))]
+    [else (append (list VAZIO) (acha-e-deleta (rest pokebag) nome))]))
+
+(define (libera-pokemon treinador nome)
+  (make-treinador 
+    (treinador-nome treinador)
+    (treinador-idade treinador)
+    (acha-e-deleta (treinador-pokebag treinador) nome)))
+
+(define [cura-pokemon pokemoncapturado]
+  (if (eq? VAZIO pokemoncapturado)
+    VAZIO 
+    (make-pokemoncapturado 
+      (pokemoncapturado-pokemon pokemoncapturado)
+      (pokemoncapturado-nome pokemoncapturado)
+      (pokemoncapturado-nivel pokemoncapturado)
+      (pokemoncapturado-hpmaximo pokemoncapturado)
+      (pokemoncapturado-hpmaximo pokemoncapturado))))
+
+(define [cura-time treinador]
+  (make-treinador 
+    (treinador-nome treinador)
+    (treinador-idade treinador)
+    (map cura-pokemon (treinador-pokebag treinador))))
