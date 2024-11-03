@@ -1,6 +1,8 @@
 #lang racket
 
 (define VAZIO 'vazio)
+(define CARTA_ALT 225)
+(define CARTA_LAR 175)
 
 (define-struct pokemon [especie tipo1 tipo2])
 
@@ -15,101 +17,129 @@
 (define CAPTURADO2 (make-pokemoncapturado POKEMON2 "Pokemon 2" 2 100 90))
 (define CAPTURADO3 (make-pokemoncapturado POKEMON3 "Pokemon 3" 3 100 90))
 (define CAPTURADO4 (make-pokemoncapturado POKEMON4 "Pokemon 4" 4 100 90))
+(define CAPTURADO5 (make-pokemoncapturado POKEMON1 "Pokemon 5" 5 100 90))
+(define CAPTURADO6 (make-pokemoncapturado POKEMON2 "Pokemon 6" 6 100 90))
 
-(define-struct treinador [nome idade pokebag])
+(define-struct treinador [nome idade vaga1 vaga2 vaga3 vaga4 vaga5 vaga6])
 
-(define TREINADOR1
-  (make-treinador "Treinador 1"
-                  18
-                  (list VAZIO VAZIO VAZIO CAPTURADO4 CAPTURADO2 CAPTURADO1)))
+(define TREINADORVAZIO (make-treinador "Treinador Vazio" 18 VAZIO VAZIO VAZIO VAZIO VAZIO VAZIO))
 
-(define TREINADOR2
-  (make-treinador "Treinador 2" 
-                  19 
-                  (list VAZIO VAZIO VAZIO VAZIO CAPTURADO3 CAPTURADO1)))
+(define TREINADORCHEIO
+  (make-treinador "Treinador Cheio"
+                  19
+                  CAPTURADO1
+                  CAPTURADO2
+                  CAPTURADO3
+                  CAPTURADO4
+                  CAPTURADO5
+                  CAPTURADO6))
 
-(define TREINADOR3 
-  (make-treinador "Treinador 3" 
-                  20 
-                  (list VAZIO VAZIO VAZIO VAZIO VAZIO CAPTURADO4)))
+(define TREINADORCOM1
+  (make-treinador "Treinador Com 1 Pokemon" 20 CAPTURADO4 VAZIO VAZIO VAZIO VAZIO VAZIO))
 
-(define TREINADOR4
-  (make-treinador "Treinador 4"
-                  21
-                  (list CAPTURADO4 CAPTURADO2 VAZIO VAZIO CAPTURADO3 CAPTURADO1)))
-
-
-(define [conta-capturado pokebag]
-  (if (empty? pokebag)
-    0
-    (let ([f (first pokebag)]
-          [r (rest pokebag)])
-      (cond
-        [(pokemoncapturado? f) (add1 (conta-capturado r))]
-        [else (conta-capturado r)]))))
-
+(define TREINADORCOM3
+  (make-treinador "Treinador Com 3 Pokemons" 21 CAPTURADO4 CAPTURADO2 VAZIO VAZIO VAZIO CAPTURADO1))
 
 (define (tamanho-time treinador)
-  (conta-capturado (treinador-pokebag treinador)))
+  (length (filter pokemoncapturado?
+                  (list (treinador-vaga1 treinador)
+                        (treinador-vaga2 treinador)
+                        (treinador-vaga3 treinador)
+                        (treinador-vaga4 treinador)
+                        (treinador-vaga5 treinador)
+                        (treinador-vaga6 treinador)))))
 
-(define (tem-vaga treinador)
+(define (tem-vaga? treinador)
   (< (tamanho-time treinador) 6))
+
+(define (vazio? x)
+  (eq? x VAZIO))
 
 (define (recebe-pokemon treinador pokemon)
   (cond
-    [(> (tamanho-time treinador) 0) treinador]
-    [else
-      (make-treinador (treinador-nome treinador)
-                      (treinador-idade treinador)
-                      (cons (make-pokemoncapturado pokemon "Brindemon" 1 100 100)
-                            (make-list 5 VAZIO)))]))
-
-(define TREINADOR6 (recebe-pokemon TREINADOR5 (make-pokemon "Brindemon" "Grass" VAZIO)))
-
-(define (adiciona-pokemon pokebag pokemon)
-  (if (empty? pokebag)
-    (list)
-    (let ([f (first pokebag)]
-          [r (rest pokebag)])
-      (cond
-        [(empty? pokebag) (list)]
-        [(eq? VAZIO f) (append (list (make-pokemoncapturado pokemon "Capturamon" 1 100 100)) r)]
-        [else (append (list f) (adiciona-pokemon r pokemon))]))))
+    [(= 0 (tamanho-time treinador))
+     (make-treinador (treinador-nome treinador)
+                     (treinador-idade treinador)
+                     (make-pokemoncapturado pokemon "Pokemon Recebido" 1 100 100)
+                     (treinador-vaga2 treinador)
+                     (treinador-vaga3 treinador)
+                     (treinador-vaga4 treinador)
+                     (treinador-vaga5 treinador)
+                     (treinador-vaga6 treinador))]
+    [else treinador]))
 
 (define (captura-pokemon treinador pokemon)
   (cond
-    [(and (> (tamanho-time treinador) 0) (< (tamanho-time treinador) 6))
-     (make-treinador (treinador-nome treinador)
-                     (treinador-idade treinador)
-                     (adiciona-pokemon (treinador-pokebag treinador) pokemon))]
+    [(and (tem-vaga? treinador) (> (tamanho-time treinador) 0))
+     (let ([tn (treinador-nome treinador)]
+           [ti (treinador-idade treinador)]
+           [v1 (treinador-vaga1 treinador)]
+           [v2 (treinador-vaga2 treinador)]
+           [v3 (treinador-vaga3 treinador)]
+           [v4 (treinador-vaga4 treinador)]
+           [v5 (treinador-vaga5 treinador)]
+           [v6 (treinador-vaga6 treinador)]
+           [pk (make-pokemoncapturado pokemon "Pokemon Capturado" 1 100 100)])
+       (cond
+         [(vazio? v1) (make-treinador tn ti pk v2 v3 v4 v5 v6)]
+         [(vazio? v2) (make-treinador tn ti v1 pk v3 v4 v5 v6)]
+         [(vazio? v3) (make-treinador tn ti v1 v2 pk v4 v5 v6)]
+         [(vazio? v4) (make-treinador tn ti v1 v2 v3 pk v5 v6)]
+         [(vazio? v5) (make-treinador tn ti v1 v2 v3 v4 pk v6)]
+         [(vazio? v6) (make-treinador tn ti v1 v2 v3 v4 v5 pk)]))]
     [else treinador]))
 
-(define (acha-e-deleta pokebag nome)
-  (if (empty? pokebag)
-    '()
-    (let ([f (first pokebag)]
-          [r (rest pokebag)])
-      (cond
-        [(empty? pokebag) '()]
-        [(or (eq? VAZIO f) (not (eq? nome (pokemoncapturado-nome f))))
-         (append '(f) (acha-e-deleta r nome))]
-        [else (append '(VAZIO) (acha-e-deleta r nome))]))))
+(define (cura-pokemoncapturado pokemoncapturado)
+  (make-pokemoncapturado (pokemoncapturado-pokemon pokemoncapturado)
+                         (pokemoncapturado-nome pokemoncapturado)
+                         (pokemoncapturado-nivel pokemoncapturado)
+                         (pokemoncapturado-hpmaximo pokemoncapturado)
+                         (pokemoncapturado-hpmaximo pokemoncapturado)))
 
-(define (libera-pokemon treinador nome)
-  (make-treinador (treinador-nome treinador)
-                  (treinador-idade treinador)
-                  (acha-e-deleta (treinador-pokebag treinador) nome)))
+(define (cura-time treinador)
+  (let ([tn (treinador-nome treinador)]
+        [ti (treinador-nome treinador)]
+        [v1 (treinador-vaga1 treinador)]
+        [v2 (treinador-vaga2 treinador)]
+        [v3 (treinador-vaga3 treinador)]
+        [v4 (treinador-vaga4 treinador)]
+        [v5 (treinador-vaga5 treinador)]
+        [v6 (treinador-vaga6 treinador)]
+        [cura (lambda (pk)
+                (if (eq? pk VAZIO)
+                    VAZIO
+                    (cura-pokemoncapturado pk)))])
+    (make-treinador tn ti (cura v1) (cura v2) (cura v3) (cura v4) (cura v5) (cura v6))))
 
-(define [cura-pokemon pokemoncapturado]
-  (if (eq? VAZIO pokemoncapturado)
-    VAZIO
-    (make-pokemoncapturado (pokemoncapturado-pokemon pokemoncapturado)
-                           (pokemoncapturado-nome pokemoncapturado)
-                           (pokemoncapturado-nivel pokemoncapturado)
-                           (pokemoncapturado-hpmaximo pokemoncapturado)
-                           (pokemoncapturado-hpmaximo pokemoncapturado))))
 
-(define [cura-time treinador]
-  (make-treinador (treinador-nome treinador)
-                  (treinador-idade treinador)
-                  (map cura-pokemon (treinador-pokebag treinador))))
+(define (cor-do-tipo pokemoncapturado)
+  (if (vazio? pokemoncapturado)
+    "lightgray"
+    (let ([tipo (pokemon-tipo1 (pokemoncapturado-pokemon pokemoncapturado))])
+      (cond 
+        [(eq? tipo "Normal") (make-color 170 170 153 255)]
+        [(eq? tipo "Fire") (make-color 255 68 34 255)]
+        [(eq? tipo "Fire") (make-color 51 153 255 255)]
+        [(eq? tipo "Eletric") (make-color 255 204 51 255)]
+        [(eq? tipo "Grass") (make-color 109 204 85 255)]
+        [(eq? tipo "Ice") (make-color 102 204 255 255)]
+        [(eq? tipo "Fighting") (make-color 187 85 68 255)]
+        [(eq? tipo "Poison") (make-color 170 85 153 255)]
+        [(eq? tipo "Ground") (make-color 221 187 85 255)]
+        [(eq? tipo "Flying") (make-color 136 153 255 255)]
+        [(eq? tipo "Psychic") (make-color 255 85 153 255)]
+        [(eq? tipo "Bug") (make-color 170 187 34 255)]
+        [(eq? tipo "Rock") (make-color 187 170 102 255)]
+        [(eq? tipo "Ghost") (make-color 102 102 187 255)]
+        [(eq? tipo "Dragon") (make-color 119 102 238 255)]
+        [(eq? tipo "Dark") (make-color 119 85 68 255)]
+        [(eq? tipo "Steel") (make-color 170 170 187 255)]
+        [(eq? tipo "Fairy") (make-color 238 153 238 255)]
+        [else "darkgray"]))))
+
+(define (desenha-pokemon pokemoncapturado)
+  (overlay 
+   (rectangle (+ CARTA_LAR 1) (+ CARTA_ALT 1) "outline" "black")
+   (rectangle CARTA_LAR CARTA_ALT "solid" (cor-do-tipo pokemoncapturado))))
+
+(cor-do-tipo CAPTURADO1)
